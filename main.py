@@ -85,6 +85,7 @@ def update_combobox():
     values = load_values_from_file()
     values.sort()  # Ordina i valori in ordine alfabetico
     print("Valori stampati da funz aggiornamento:", values)
+    print("modifica")
     for combobox in combos:
         combobox['values'] = values
         # Aggiungi il binding per filtrare i valori mentre si digita
