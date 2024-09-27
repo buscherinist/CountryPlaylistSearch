@@ -16,7 +16,7 @@ def filter_combobox(event):
     # Ottieni il testo corrente inserito nella Combobox
     typed_text = event.widget.get()
 
-    print("Valori caricati:", values)  # Stampa i valori caricati
+    print("Valori stampati dal filtro:", values)  # Stampa i valori caricati
 
     # Filtra i valori che iniziano con il testo digitato
     filtered_values = [value for value in values if value.lower().startswith(typed_text.lower())]
@@ -85,7 +85,7 @@ def load_values_from_file():
 def update_combobox():
     values = load_values_from_file()
     values.sort()  # Ordina i valori in ordine alfabetico
-    print("Valori caricati:", values)
+    print("Valori stampati da funz aggiornamento:", values)
     for combobox in combos:
         combobox['values'] = values
 
