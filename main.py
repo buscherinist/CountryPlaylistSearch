@@ -16,6 +16,8 @@ def filter_combobox(event):
     # Ottieni il testo corrente inserito nella Combobox
     typed_text = event.widget.get()
 
+    print("Valori caricati:", values)  # Stampa i valori caricati
+
     # Filtra i valori che iniziano con il testo digitato
     filtered_values = [value for value in values if value.lower().startswith(typed_text.lower())]
 
