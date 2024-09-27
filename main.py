@@ -7,44 +7,19 @@ import subprocess
 import time
 import datetime
 
+# Funzione per filtrare i valori nella combobox in base al testo inserito
+def filter_combobox(event):
+    # Ottieni il testo corrente inserito nella Combobox
+    typed_text = event.widget.get()
 
-# INIZIO AUTOCOMPLETAMENTO
-class AutocompleteCombobox(ttk.Combobox):
-    def set_completion_list(self, completion_list):
-        self._completion_list = sorted(completion_list)  # Ordina la lista per l'autocompletamento
-        self._hits = []
-        self._hit_index = 0
-        self.position = 0
-        self.bind('<KeyRelease>', self.handle_keyrelease)
-        self['values'] = self._completion_list  # Imposta i valori della Combobox
-    def autocomplete(self, delta=0):
-        """Auto-completa il testo inserito"""
-        if delta:  # Se delta è diverso da 0, sposta il cursore all'inizio
-            self.delete(self.position, tk.END)
-        else:
-            self.position = len(self.get())
+    # Filtra i valori che iniziano con il testo digitato
+    filtered_values = [value for value in values if value.lower().startswith(typed_text.lower())]
 
-        _hits = []
-        for item in self._completion_list:
-            if item.lower().startswith(self.get().lower()):  # Cerca corrispondenza
-                _hits.append(item)
+    # Aggiorna i valori della Combobox con i valori filtrati
+    event.widget['values'] = filtered_values
 
-        if _hits != self._hits:
-            self._hit_index = 0
-            self._hits = _hits
-
-        if _hits:
-            self._hit_index = (self._hit_index + delta) % len(_hits)
-            self.delete(0, tk.END)
-            self.insert(0, _hits[self._hit_index])
-            self.select_range(self.position, tk.END)
-
-    def handle_keyrelease(self, event):
-        """Gestisci il rilascio del tasto"""
-        if event.keysym in ('BackSpace', 'Left', 'Right', 'Up', 'Down'):
-            return
-        self.autocomplete()
-#FINE AUTOCOMPLETAMENTO
+    # Mostra la lista aggiornata dei valori
+    event.widget.event_generate('<Down>')
 
 # Funzione per creare righe dinamiche e memorizzare gli Entry in una lista
 def create_dynamic_rows(frame, num_rows):
@@ -79,6 +54,9 @@ def create_dynamic_rows(frame, num_rows):
             # Bind degli eventi per il cambiamento di colore
             button_show.bind("<Enter>", on_enter)  # Quando il mouse entra nel pulsante
             button_show.bind("<Leave>", on_leave)  # Quando il mouse esce dal pulsante
+
+        # Aggiungi il binding per filtrare i valori mentre si digita
+        combobox.bind('<KeyRelease>', filter_combobox)
 
         # Aggiungi la combobox alla lista
         combos.append(combobox)
@@ -560,4 +538,3 @@ email_label.bind("<Leave>", hide_tooltip)
 
 # Avvia il loop principale della finestra
 root.mainloop()
-
