@@ -15,7 +15,6 @@ global values
 def filter_combobox(event):
     # Ottieni il testo corrente inserito nella Combobox
     typed_text = event.widget.get()
-
     print("Valori stampati dal filtro:", values)  # Stampa i valori caricati
 
     # Filtra i valori che iniziano con il testo digitato
@@ -88,7 +87,8 @@ def update_combobox():
     print("Valori stampati da funz aggiornamento:", values)
     for combobox in combos:
         combobox['values'] = values
-
+        # Aggiungi il binding per filtrare i valori mentre si digita
+        combobox.bind('<KeyRelease>', filter_combobox)
 #rimuove la choreo se richiesto e memorizza l'ora in cui è stata suonata nel file del blocco
 def remove_values(text):
     if text in values:
@@ -241,7 +241,7 @@ def save_to_html():
 
         # Recupera il testo dall'Entry "nome_evento"
         evento_nome = nome_evento.get().strip()  # Usa .strip() per rimuovere eventuali spazi bianchi
-        print(evento_nome)
+
         if evento_nome:  # Verifica che il nome dell'evento non sia vuoto
             # Inserisci il nome dell'evento nell'HTML
             html_content = html_content.replace("<!-- Nome -->", evento_nome)
@@ -298,7 +298,7 @@ def save_to_html_for_load():
 
         # Recupera il testo dall'Entry "nome_evento"
         evento_nome = nome_evento.get().strip()  # Usa .strip() per rimuovere eventuali spazi bianchi
-        print(evento_nome)
+
         if evento_nome:  # Verifica che il nome dell'evento non sia vuoto
             # Inserisci il nome dell'evento nell'HTML
             html_content = html_content.replace("<!-- Nome -->", evento_nome)
