@@ -9,10 +9,11 @@ import subprocess
 import time
 import datetime
 
-global values
+values=[]
 
 # Funzione per filtrare i valori nella combobox in base al testo inserito
 def filter_combobox(event):
+    global values # Dichiarazione di utilizzo della variabile globale
     # Ottieni il testo corrente inserito nella Combobox
     typed_text = event.widget.get()
     print("Valori stampati dal filtro:", values)  # Stampa i valori caricati
@@ -29,6 +30,7 @@ def filter_combobox(event):
 # Funzione per creare righe dinamiche e memorizzare gli Entry in una lista
 def create_dynamic_rows(frame, num_rows):
 
+    global values # Dichiarazione di utilizzo della variabile globale
     combos = []  # Lista per memorizzare le combobox
 
     for i in range(num_rows):
@@ -70,6 +72,7 @@ def create_dynamic_rows(frame, num_rows):
 
 #carica le choreo dal file choreolist.dt
 def load_values_from_file():
+    global values # Dichiarazione di utilizzo della variabile globale
     try:
         with open("choreolist.dat", "r") as file:
             # Leggi ogni linea e rimuovi spazi bianchi come newline
@@ -82,6 +85,7 @@ def load_values_from_file():
 
 # Funzione per aggiornare tutte le combobox
 def update_combobox():
+    global values # Dichiarazione di utilizzo della variabile globale
     values = load_values_from_file()
     values.sort()  # Ordina i valori in ordine alfabetico
     print("Valori stampati da funz aggiornamento:", values)
@@ -92,6 +96,7 @@ def update_combobox():
         combobox.bind('<KeyRelease>', filter_combobox)
 #rimuove la choreo se richiesto e memorizza l'ora in cui è stata suonata nel file del blocco
 def remove_values(text):
+    global values # Dichiarazione di utilizzo della variabile globale
     if text in values:
         values.remove(text)
     for combobox in combos:
@@ -111,26 +116,14 @@ def add_values(valori_da_aggiungere):
         # Ottieni i valori attuali della combobox come una lista
         valori_attuali = list(combobox['values'])
 
-        # Stampa i valori attuali per controllo
-        #print(f"Valori attuali: {valori_attuali}")
-
-        # Stampa i valori che stai cercando di aggiungere
-        #print(f"Valori da aggiungere: {valori_da_aggiungere}")
-
         # Combina i valori attuali con i nuovi, evitando duplicati
         nuovi_valori = valori_attuali + [valore for valore in valori_da_aggiungere if valore not in valori_attuali]
-
-        # Stampa i nuovi valori combinati prima di ordinare
-        #print(f"Nuovi valori (prima di ordinare): {nuovi_valori}")
 
         # Se necessario, converti tuple in stringhe
         nuovi_valori = [str(valore) if isinstance(valore, tuple) else valore for valore in nuovi_valori]
 
         # Ordina i valori come stringhe per evitare errori
         nuovi_valori_ordinati = sorted(nuovi_valori, key=lambda x: str(x))
-
-        # Stampa i nuovi valori ordinati
-        #print(f"Nuovi valori ordinati: {nuovi_valori_ordinati}")
 
         # Imposta i nuovi valori ordinati nella combobox
         combobox['values'] = nuovi_valori_ordinati
@@ -335,7 +328,7 @@ def clear_file(text):
 
     #ricarico tutte le coreo nei values delle combobox
     if text=="playlistblock.dat":
-        print("Riattivo le coreo per file " + text)
+#        print("Riattivo le coreo per file " + text)
         values = load_values_from_file()
         for combobox in combos:
             combobox['values'] = values
