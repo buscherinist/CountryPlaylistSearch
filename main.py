@@ -9,6 +9,8 @@ import subprocess
 import time
 import datetime
 
+global values
+
 # Funzione per filtrare i valori nella combobox in base al testo inserito
 def filter_combobox(event):
     # Ottieni il testo corrente inserito nella Combobox
@@ -81,10 +83,9 @@ def load_values_from_file():
 def update_combobox():
     values = load_values_from_file()
     values.sort()  # Ordina i valori in ordine alfabetico
+    print("Valori caricati:", values)
     for combobox in combos:
         combobox['values'] = values
-        #if new_values:  # Se ci sono nuovi valori
-            #combobox.set(new_values[0])  # Imposta il primo valore della lista come selezionato
 
 #rimuove la choreo se richiesto e memorizza l'ora in cui è stata suonata nel file del blocco
 def remove_values(text):
