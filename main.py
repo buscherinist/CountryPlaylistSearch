@@ -1,3 +1,5 @@
+#per compilare
+#pyinstaller --onefile --noconsole main.py
 import tkinter as tk
 from tkinter import ttk  # Importa ttk per utilizzare Combobox
 from tkinter import messagebox  # Importa messagebox per la finestra di conferma
@@ -249,7 +251,7 @@ def save_to_html():
     table_rows = ""
     for i, combobox in enumerate(combos):
         value = combobox.get()
-        if value:  # Solo se la combobox non è vuota
+        if value and value != "Choose a choreo":  # Solo se la combobox non è vuota
             if i==0:
                 table_rows += f"<tr><td>Play</td><td>{value}</td></tr>\n"
             else:
@@ -306,7 +308,7 @@ def save_to_html_for_load():
     table_rows = ""
     for i, combobox in enumerate(combos):
         value = combobox.get()
-        if value:  # Solo se la combobox non è vuota
+        if value and value != "Choose a choreo":  # Solo se la combobox non è vuota
             if i==0:
                 table_rows += f"<tr><td>Play</td><td>{value}</td></tr>\n"
             else:
@@ -395,8 +397,10 @@ def center_window(root, width, height):
 
 # Inizio programma principale
 
+#Svuota il file html
 avvio_programma()
-# Impostazioni
+
+# Impostazioni della fnestra
 # Imposta il font
 font_titolo = ("Georgia", 18)  # Font Arial, dimensione 16
 font = ("Georgia", 16)  # Font Arial, dimensione 16
