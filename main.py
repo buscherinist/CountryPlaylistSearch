@@ -16,7 +16,7 @@ def filter_combobox(event):
     global values # Dichiarazione di utilizzo della variabile globale
     # Ottieni il testo corrente inserito nella Combobox
     typed_text = event.widget.get()
-    print("Valori stampati dal filtro:", values)  # Stampa i valori caricati
+    # print("Valori stampati dal filtro:", values)  # Stampa i valori caricati
 
     # Filtra i valori che iniziano con il testo digitato
     filtered_values = [value for value in values if value.lower().startswith(typed_text.lower())]
@@ -74,7 +74,7 @@ def create_dynamic_rows(frame, num_rows):
 def load_values_from_file():
     global values # Dichiarazione di utilizzo della variabile globale
     try:
-        with open("choreolist.dat", "r") as file:
+        with open("./choreo/choreolist.dat", "r") as file:
             # Leggi ogni linea e rimuovi spazi bianchi come newline
             values = [line.strip() for line in file.readlines()]
             values.sort()  # Ordina i valori in ordine alfabetico
@@ -88,17 +88,17 @@ def update_combobox():
     global values # Dichiarazione di utilizzo della variabile globale
     values = load_values_from_file()
     values.sort()  # Ordina i valori in ordine alfabetico
-    print("Valori stampati da funz aggiornamento:", values)
-    print("modifica")
+    #print("Valori stampati da funz aggiornamento:", values)
+    #print("modifica")
     for combobox in combos:
         combobox['values'] = values
-        # Aggiungi il binding per filtrare i valori mentre si digita
-        combobox.bind('<KeyRelease>', filter_combobox)
+
 #rimuove la choreo se richiesto e memorizza l'ora in cui è stata suonata nel file del blocco
 def remove_values(text):
     global values # Dichiarazione di utilizzo della variabile globale
     if text in values:
         values.remove(text)
+    #print("Valori stampati da funz remove:", values)
     for combobox in combos:
         combobox['values'] = values
     # Ottenere la data e l'ora attuali
@@ -112,6 +112,11 @@ def remove_values(text):
 
 
 def add_values(valori_da_aggiungere):
+    global values
+
+    #print("valori da aggiungere")
+    #print(valori_da_aggiungere)
+
     for combobox in combos:
         # Ottieni i valori attuali della combobox come una lista
         valori_attuali = list(combobox['values'])
@@ -120,20 +125,24 @@ def add_values(valori_da_aggiungere):
         nuovi_valori = valori_attuali + [valore for valore in valori_da_aggiungere if valore not in valori_attuali]
 
         # Se necessario, converti tuple in stringhe
-        nuovi_valori = [str(valore) if isinstance(valore, tuple) else valore for valore in nuovi_valori]
+        values = [str(valore) if isinstance(valore, tuple) else valore for valore in nuovi_valori]
+
+        #print("nuovi valori")
+        #print(values)
 
         # Ordina i valori come stringhe per evitare errori
-        nuovi_valori_ordinati = sorted(nuovi_valori, key=lambda x: str(x))
+        values = sorted(values, key=lambda x: str(x))
 
         # Imposta i nuovi valori ordinati nella combobox
-        combobox['values'] = nuovi_valori_ordinati
+        for combobox in combos:
+            combobox['values'] = values
 
 #inserisce il nome della nuova choreo nel file Choreolist.dat
 def append_to_file():
     text = nome_choreo.get().strip()  # Prendi il testo dall'Entry e rimuovi eventuali spazi iniziali e finali
     if text:  # Se il testo non è vuoto
         text=text.upper()
-        with open("choreolist.dat", "a") as file:  # Apri il file in modalità append, crea il file se non esiste
+        with open("./choreo/choreolist.dat", "a") as file:  # Apri il file in modalità append, crea il file se non esiste
             file.write(text + "\n")  # Scrivi il testo con un ritorno a capo
         nome_choreo.delete(0, tk.END)  # Pulisci il campo Entry dopo aver inserito il testo
         update_combobox()  # Aggiorna i valori della Combobox
@@ -156,30 +165,31 @@ def filtra_righe_per_ora():
     ora_corrente = datetime.datetime.now()
 
     #stampa orari
-    print("Ore da aggiungere "+ str(ore_da_aggiungere))
-    print(f"Ora corrente {ora_corrente.strftime('%H:%M:%S')}")
-
-    print("inizio controllo")
+    #print("Ore da aggiungere "+ str(ore_da_aggiungere))
+    #print(f"Ora corrente {ora_corrente.strftime('%H:%M:%S')}")
+    #print("righe del file")
+    #print(righe)
+    #print("inizio controllo")
     for i in range(1, len(righe), 2):  # Legge solo le righe con i timestamp
         # Converte la stringa del timestamp in un oggetto datetime
         ora_riga = datetime.datetime.strptime(righe[i].strip(), "%Y-%m-%d %H:%M:%S")
-        print("Choreo" + righe[i - 1])
-        print(f"Ora della riga {ora_riga.strftime('%H:%M:%S')}")
+        #print("Choreo" + righe[i - 1])
+        #print(f"Ora della riga {ora_riga.strftime('%H:%M:%S')}")
         # Se la riga soddisfa la condizione, la aggiunge alla lista da ricaricare nella combo
         ora_da_controllare = ora_riga + datetime.timedelta(hours=ore_da_aggiungere)
-        print(f"Ora da controllare {ora_da_controllare.strftime('%H:%M:%S')}")
+        #print(f"Ora da controllare {ora_da_controllare.strftime('%H:%M:%S')}")
         if  ora_corrente > ora_da_controllare:
-            print("Choreo da ricaricare nella combobox" + righe[i - 1])
+            #print("Choreo da ricaricare nella combobox" + righe[i - 1])
             righe_valide.append((righe[i - 1].strip()))
         else:
             # Se la riga non soddisfa la condizione, la aggiunge alla lista da ricaricare nel file
-            print("Choreo da ricaricare nel file" + righe[i - 1])
+            #print("Choreo da ricaricare nel file" + righe[i - 1])
             righe_da_tenere.append(righe[i-1]) #mantiene il contenuto
             righe_da_tenere.append(righe[i])  # mantiene il timestamp
 
     #sovrascrivi il file con le righe che vuoi mantenere
     with open("playlistblock.dat", 'w') as file:
-        print(f"Righe da riscrivere nel file: {righe_da_tenere}")
+        #print(f"Righe da riscrivere nel file: {righe_da_tenere}")
         file.writelines(righe_da_tenere)
 
     return righe_valide
@@ -230,7 +240,7 @@ def move_up():
 
 # Funzione per salvare il contenuto delle combobox in un file HTML
 def save_to_html():
-    with open("template.html", "r") as template_file:
+    with open("./template/template.html", "r") as template_file:
         html_content = template_file.read()
 
         # Recupera il testo dall'Entry "nome_evento"
@@ -287,7 +297,7 @@ def save_to_html():
     subprocess.Popen([chrome_path, '--incognito', f'file:///{abs_path}'])
 
 def save_to_html_for_load():
-    with open("templatericarica.html", "r") as template_file:
+    with open("./template/templatericarica.html", "r") as template_file:
         html_content = template_file.read()
 
         # Recupera il testo dall'Entry "nome_evento"
@@ -322,7 +332,7 @@ def save_to_html_for_load():
 #svuot il file dello storico delle choreo ballate
 def clear_file(text):
     # Svuotare il contenuto di un file
-    print("Cancellazione del file "+text)
+    #print("Cancellazione del file "+text)
     with open(text, "w") as file:
         pass  # Non scrivendo nulla, il file viene svuotato
 
@@ -359,7 +369,7 @@ def add_horizontal_line(frame, row_index):
     canvas.create_line(0, 0, 800, 0, fill=colore_sfondo_line)
 
 def avvio_programma():
-    with open("templatericarica.html", "r") as template_file:
+    with open("./template/templatericarica.html", "r") as template_file:
         html_content = template_file.read()
     # Salva il file HTML vuoto
     with open("playlist.html", "w") as html_file:
