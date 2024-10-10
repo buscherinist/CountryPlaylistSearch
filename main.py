@@ -399,6 +399,19 @@ def hide_tooltip(event):
         if isinstance(widget, tk.Toplevel):
                 widget.destroy()
 
+
+
+def insert_msg():
+    with open("./playlist.html", "r") as template_file:
+        html_content = template_file.read()
+    # Inserisce il messaggio nell'HTML
+    messaggio=msg.get()
+    html_content = html_content.replace('<!-- I messaggi saranno inseriti qui -->', messaggio)
+
+    # Salva il file HTML aggiornato
+    with open("playlist.html", "w") as html_file:
+        html_file.write(html_content)
+
 def center_window2(root, width, height):
     #ottieni la dimensione dello schermo
     screen_width = root.winfo_screenwidth()
@@ -411,9 +424,6 @@ def center_window2(root, width, height):
     #imposta le dimensioni e la posizione della finestra
     #root.geometry(f"{width}x{height}+{x}+{y}")
     #root.geometry('')# Lascia vuoto il parametro per adattarsi al contenuto
-
-def insert_msg():
-    print("messaggio")
 
 def center_window():
     # Aggiorna le dimensioni della finestra in base ai contenuti
