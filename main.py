@@ -25,7 +25,8 @@ def filter_combobox(event):
     event.widget['values'] = filtered_values
 
     # Mostra la lista aggiornata dei valori
-    event.widget.event_generate('<Down>')
+    # Non la mostra più, altrimenti perdevo il focus; la lista viene mostrata quando si clicca sulla freccia
+    #event.widget.event_generate('<Down>')
 
 # Funzione per creare righe dinamiche e memorizzare gli Entry in una lista
 def create_dynamic_rows(frame, num_rows):
@@ -50,7 +51,8 @@ def create_dynamic_rows(frame, num_rows):
         combobox['values'] = values
 
         # Imposta una scritta predefinita
-        combobox.set("Choose a choreo")
+        #combobox.set("Choose a choreo")
+        combobox.set("")
 
         combobox.grid(row=i, column=1, padx=5, pady=2)
 
@@ -216,7 +218,7 @@ def move_up():
         combos[i - 1].set(previous_value)
 
     # Pulisci l'ultima combobox
-    combos[-1].set('Choose a choreo')
+    #combos[-1].set('Choose a choreo')
 
     # Scrivi il valore della prima combobox nel file storico
     if first_value:
@@ -313,13 +315,20 @@ def save_to_html_for_load():
 
     # Costruzione delle righe della tabella
     table_rows = ""
+    textarea.config(state='normal')
+    textarea.delete("1.0", tk.END)  # Elimina il testo dall'inizio alla fine
+    testo="Displayed choreos"
     for i, combobox in enumerate(combos):
         value = combobox.get()
-        if value and value != "Choose a choreo":  # Solo se la combobox non è vuota
+        if value and value != "":  # Solo se la combobox non è vuota
             if i==0:
                 table_rows += f"<tr><td>Play</td><td>{value}</td></tr>\n"
             else:
                 table_rows += f"<tr><td> </td><td>{value}</td></tr>\n"
+            testo=testo+"\n"+value
+    #carica nella textarea
+    textarea.insert("1.0", testo)
+    textarea.config(state='disabled')
 
     # Inserisci le righe della tabella nell'HTML
     html_content = html_content.replace(
@@ -390,7 +399,7 @@ def hide_tooltip(event):
         if isinstance(widget, tk.Toplevel):
                 widget.destroy()
 
-def center_window(root, width, height):
+def center_window2(root, width, height):
     #ottieni la dimensione dello schermo
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight()
@@ -400,7 +409,31 @@ def center_window(root, width, height):
     y = (screen_height // 2) - (height // 2)
 
     #imposta le dimensioni e la posizione della finestra
-    root.geometry(f"{width}x{height}+{x}+{y}")
+    #root.geometry(f"{width}x{height}+{x}+{y}")
+    #root.geometry('')# Lascia vuoto il parametro per adattarsi al contenuto
+
+def insert_msg():
+    print("messaggio")
+
+def center_window():
+    # Aggiorna le dimensioni della finestra in base ai contenuti
+    root.update_idletasks()  # Aggiorna il layout e le dimensioni
+
+    # Ottieni le dimensioni della finestra
+    width = root.winfo_width()
+    height = root.winfo_height()
+
+    # Ottieni le dimensioni dello schermo
+    screen_width = root.winfo_screenwidth()
+    screen_height = root.winfo_screenheight()
+
+    # Calcola la posizione x e y per centrare la finestra
+    x = (screen_width // 2) - (width // 2)
+    y = (screen_height // 2) - (height // 2)
+
+    # Imposta la geometria della finestra
+    root.geometry(f'{width}x{height}+{x}+{y}')
+
 
 # Inizio programma principale
 
@@ -439,9 +472,6 @@ colore_testo_entry = "black"
 root = tk.Tk()
 root.title("Country playlist manager")
 
-# Imposta le dimensioni della finestra
-#center_window(root,800,600)
-center_window(root,1024,600)
 root.configure(bg=colore_sfondo_root)
 
 # Sovrascrivi il comportamento del pulsante di chiusura
@@ -470,6 +500,14 @@ values = load_values_from_file()
 
 # Chiama la funzione per creare le righe e ottenere la lista degli Entry
 combos = create_dynamic_rows(frame_left, num_rows)
+
+# Creazione della Textarea
+textarea = tk.Text(frame_left, height=7, width=25, font=font)  # height è il numero di righe, width il numero di colonne
+textarea.grid(row=0, column=4, rowspan=3, padx=5)
+# Inserisci del testo predefinito nella Textarea
+textarea.insert("1.0","Displayed choreos")
+# Imposta la textarea in modalità non modificabile
+textarea.config(state='disabled')
 
 button_show = tk.Button(frame_left, text="Show", bg=colore_sfondo_button, fg=colore_testo_button, font=font, command=save_to_html)
 button_show.grid(row=num_rows-1, column=2, pady=2)
@@ -533,19 +571,42 @@ button_block.grid(row=num_rows+4, column=1, pady=2)
 button_block.bind("<Enter>", on_enter)  # Quando il mouse entra nel pulsante
 button_block.bind("<Leave>", on_leave)  # Quando il mouse esce dal pulsante
 
+# Aggiungi una linea orizzontale sottile dopo il pulsante
+add_horizontal_line(frame_left, num_rows+5)  # Posiziona la linea dopo il pulsante
+
+label_msg= tk.Label(frame_left, text="Message",bg=colore_sfondo_label, fg=colore_testo_label, font=font)
+label_msg.grid(row=num_rows+6, column=0, padx=5, pady=2)
+
+# Creazione del campo di input
+msg = tk.Entry(frame_left, bg=colore_sfondo_entry, fg=colore_testo_entry, font=font)
+msg.grid(row=num_rows+6, column=1, padx=5, pady=2)
+
+msg_insert = tk.Button(frame_left, text="Insert",  bg=colore_sfondo_button, fg=colore_testo_button, font=font, command=insert_msg)
+msg_insert.grid(row=num_rows+6, column=2, pady=2)
+
+# Bind degli eventi per il cambiamento di colore
+msg_insert.bind("<Enter>", on_enter)  # Quando il mouse entra nel pulsante
+msg_insert.bind("<Leave>", on_leave)  # Quando il mouse esce dal pulsante
+
+#pulsante di chiusura
 button_exit = tk.Button(frame_left, text="Exit",  bg=colore_sfondo_button, fg=colore_testo_button, font=font, command=exit_app)
 
-button_exit.grid(row=num_rows+5, column=10, pady=2)
+button_exit.grid(row=num_rows+7, column=4, pady=2)
 # Bind degli eventi per il cambiamento di colore
 button_exit.bind("<Enter>", on_enter)  # Quando il mouse entra nel pulsante
 button_exit.bind("<Leave>", on_leave)  # Quando il mouse esce dal pulsante
 
 email_label = tk.Label(frame_left, text="Developed by Stefano Buscherini",bg=colore_sfondo_label, fg=colore_testo_label, font=font_developed)
 email_label.bind("<Button-1>", lambda e: open_email())
-email_label.grid(row=num_rows+6, column=0, padx=5, pady=2)
+email_label.grid(row=num_rows+7, column=0, padx=5, pady=2)
 
 email_label.bind("<Enter>", show_tooltip)
 email_label.bind("<Leave>", hide_tooltip)
+
+# Imposta le dimensioni della finestra
+#center_window(root,800,600)
+#center_window(root,1024,600)
+center_window()
 
 # Avvia il loop principale della finestra
 root.mainloop()
