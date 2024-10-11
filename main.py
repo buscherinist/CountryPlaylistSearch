@@ -8,6 +8,8 @@ import webbrowser
 import subprocess
 import time
 import datetime
+import win32api
+from win32con import SM_CYSMICON
 
 values=[]
 
@@ -27,6 +29,55 @@ def filter_combobox(event):
     # Mostra la lista aggiornata dei valori
     # Non la mostra più, altrimenti perdevo il focus; la lista viene mostrata quando si clicca sulla freccia
     #event.widget.event_generate('<Down>')
+
+# Funzione per spostare i valori delle combobox verso l'alto
+def move_up():
+    if not combos:
+        return
+
+    if varCheck.get() == 1:  # Se la checkbox è selezionata
+        if not blocco.get().isdigit():  # Controlla che ci sia un numero nell'Entry
+            messagebox.showwarning("Error", "You must enter a number in REPEAT AFTER HOURS!")
+            #blocco.config(bg="yellow")  # Colora l'Entry in rosso
+            return
+
+    # Prendi il contenuto della prima combobox
+    first_value = combos[0].get()
+    # Pulisci il contenuto della prima combobox
+    combos[0].set('')
+
+    # Sposta i contenuti delle combobox
+    for i in range(1, len(combos)):
+        previous_value = combos[i].get()
+        combos[i - 1].set(previous_value)
+
+    # Pulisci l'ultima combobox
+    #combos[-1].set('Choose a choreo')
+
+    # Scrivi il valore della prima combobox nel file storico
+    if first_value:
+        # Ottenere la data e l'ora attuali
+        now = datetime.datetime.now()
+
+        # Formattare la data e l'ora come stringa
+        timestamp = now.strftime("%Y-%m-%d %H:%M:%S")  # Esempio: '2024-09-05 15:30:45'
+
+        with open("playliststore.dat", "a") as file:
+            file.write(first_value + "\n" + timestamp + "\n")
+
+    #se richiesta la gestione del blocco per un certo numero di ore
+        if varCheck.get() == 1:
+            righe_da_tenere= []
+            #elimino la choreo dalla lista dei valori
+            remove_values(first_value)
+            #aggiungo la choreo per cui è passato il tempo di blocco
+            righe_da_aggiungere=filtra_righe_per_ora()
+            add_values(righe_da_aggiungere)
+
+#ripulisce tutte le combos
+def reset_combos():
+    for i in range(0, len(combos)):
+        combos[i].set("")
 
 # Funzione per creare righe dinamiche e memorizzare gli Entry in una lista
 def create_dynamic_rows(frame, num_rows):
@@ -57,12 +108,19 @@ def create_dynamic_rows(frame, num_rows):
         combobox.grid(row=i, column=1, padx=5, pady=2)
 
         if (i==0):
-            button_show = tk.Button(frame_left, text="Up", bg=colore_sfondo_button, fg=colore_testo_button, font=font, command=move_up)
-            button_show.grid(row=i, column=2, pady=2)
-
+            #crea il bottone Up
+            button_up = tk.Button(frame_left, text="Up", bg=colore_sfondo_button, fg=colore_testo_button, font=font, command=move_up)
+            button_up.grid(row=i, column=2, pady=2)
             # Bind degli eventi per il cambiamento di colore
-            button_show.bind("<Enter>", on_enter)  # Quando il mouse entra nel pulsante
-            button_show.bind("<Leave>", on_leave)  # Quando il mouse esce dal pulsante
+            button_up.bind("<Enter>", on_enter)  # Quando il mouse entra nel pulsante
+            button_up.bind("<Leave>", on_leave)  # Quando il mouse esce dal pulsante
+            #crea il bottone Reset
+            button_reset = tk.Button(frame_left, text="Reset", bg=colore_sfondo_button, fg=colore_testo_button, font=font,
+                                  command=reset_combos)
+            button_reset.grid(row=i, column=3, pady=2)
+            # Bind degli eventi per il cambiamento di colore
+            button_reset.bind("<Enter>", on_enter)  # Quando il mouse entra nel pulsante
+            button_reset.bind("<Leave>", on_leave)  # Quando il mouse esce dal pulsante
 
         # Aggiungi il binding per filtrare i valori mentre si digita
         combobox.bind('<KeyRelease>', filter_combobox)
@@ -195,50 +253,6 @@ def filtra_righe_per_ora():
         file.writelines(righe_da_tenere)
 
     return righe_valide
-
-# Funzione per spostare i valori delle combobox verso l'alto
-def move_up():
-    if not combos:
-        return
-
-    if varCheck.get() == 1:  # Se la checkbox è selezionata
-        if not blocco.get().isdigit():  # Controlla che ci sia un numero nell'Entry
-            messagebox.showwarning("Error", "You must enter a number in REPEAT AFTER HOURS!")
-            #blocco.config(bg="yellow")  # Colora l'Entry in rosso
-            return
-
-    # Prendi il contenuto della prima combobox
-    first_value = combos[0].get()
-    # Pulisci il contenuto della prima combobox
-    combos[0].set('')
-
-    # Sposta i contenuti delle combobox
-    for i in range(1, len(combos)):
-        previous_value = combos[i].get()
-        combos[i - 1].set(previous_value)
-
-    # Pulisci l'ultima combobox
-    #combos[-1].set('Choose a choreo')
-
-    # Scrivi il valore della prima combobox nel file storico
-    if first_value:
-        # Ottenere la data e l'ora attuali
-        now = datetime.datetime.now()
-
-        # Formattare la data e l'ora come stringa
-        timestamp = now.strftime("%Y-%m-%d %H:%M:%S")  # Esempio: '2024-09-05 15:30:45'
-
-        with open("playliststore.dat", "a") as file:
-            file.write(first_value + "\n" + timestamp + "\n")
-
-    #se richiesta la gestione del blocco per un certo numero di ore
-        if varCheck.get() == 1:
-            righe_da_tenere= []
-            #elimino la choreo dalla lista dei valori
-            remove_values(first_value)
-            #aggiungo la choreo per cui è passato il tempo di blocco
-            righe_da_aggiungere=filtra_righe_per_ora()
-            add_values(righe_da_aggiungere)
 
 # Funzione per salvare il contenuto delle combobox in un file HTML
 def save_to_html():
@@ -438,7 +452,11 @@ def center_window():
 
     # Calcola la posizione x e y per centrare la finestra
     x = (screen_width // 2) - (width // 2)
-    y = (screen_height // 2) - (height // 2)
+
+    # Ottieni l'altezza della barra delle applicazioni (Windows)
+    taskbar_height = win32api.GetSystemMetrics(win32con.SM_CYSMICON)
+
+    y = (screen_height // 2) - (height // 2) - taskbar_height
 
     # Imposta la geometria della finestra
     root.geometry(f'{width}x{height}+{x}+{y}')
