@@ -273,6 +273,10 @@ def save_to_html():
     # Salva il file HTML aggiornato
     with open("playlist.html", "w") as html_file:
         html_file.write(html_content)
+
+    # inserisce il messaggio nella playlist html
+    insert_msg()
+
     #ATTENZIONE
     #Vai nelle Impostazioni di Chrome.
     # Scorri fino alla sezione All'avvio.
@@ -337,6 +341,8 @@ def save_to_html_for_load():
     # Salva il file HTML aggiornato
     with open("playlist.html", "w") as html_file:
         html_file.write(html_content)
+    #inserisce il messaggio nella playlist html
+    insert_msg()
 
 #svuot il file dello storico delle choreo ballate
 def clear_file(text):
@@ -377,13 +383,6 @@ def add_horizontal_line(frame, row_index):
     canvas.grid(row=row_index, column=0, columnspan=40, pady=5, sticky="ew")
     canvas.create_line(0, 0, 800, 0, fill=colore_sfondo_line)
 
-def avvio_programma():
-    with open("./template/templatericarica.html", "r") as template_file:
-        html_content = template_file.read()
-    # Salva il file HTML vuoto
-    with open("playlist.html", "w") as html_file:
-        html_file.write(html_content)
-
 def open_email():
     webbrowser.open("buscherinis@gmail.com")
 
@@ -399,27 +398,27 @@ def hide_tooltip(event):
         if isinstance(widget, tk.Toplevel):
                 widget.destroy()
 
-
-
+#scrive il messaggio nella pagina playlist
 def insert_msg():
-    with open("./playlist.html", "r") as template_file:
-        html_content = template_file.read()
+    messaggio = msg.get()
+    if len(messaggio) != 0:
     # Inserisce il messaggio nell'HTML
-    messaggio=msg.get()
-    html_content = html_content.replace('<!-- I messaggi saranno inseriti qui -->', messaggio)
-
+        with open("./playlist.html", "r") as template_file:
+            html_content = template_file.read()
+        html_content = html_content.replace('<!-- I messaggi saranno inseriti qui -->', messaggio)
     # Salva il file HTML aggiornato
-    with open("playlist.html", "w") as html_file:
-        html_file.write(html_content)
+        with open("playlist.html", "w") as html_file:
+            html_file.write(html_content)
 
-def center_window2(root, width, height):
+#vecchia funzione centra finestra quando le dimensioni erano fisse
+#def center_window(root, width, height):
     #ottieni la dimensione dello schermo
-    screen_width = root.winfo_screenwidth()
-    screen_height = root.winfo_screenheight()
+ #   screen_width = root.winfo_screenwidth()
+ #   screen_height = root.winfo_screenheight()
 
     #calcola le coordinate per centrare la finestra
-    x = (screen_width//2) - (width//2)
-    y = (screen_height // 2) - (height // 2)
+ #   x = (screen_width//2) - (width//2)
+ #   y = (screen_height // 2) - (height // 2)
 
     #imposta le dimensioni e la posizione della finestra
     #root.geometry(f"{width}x{height}+{x}+{y}")
@@ -444,6 +443,13 @@ def center_window():
     # Imposta la geometria della finestra
     root.geometry(f'{width}x{height}+{x}+{y}')
 
+#ricarica la playlist html
+def avvio_programma():
+    with open("./template/templatericarica.html", "r") as template_file:
+        html_content = template_file.read()
+    # Salva il file HTML vuoto
+    with open("playlist.html", "w") as html_file:
+        html_file.write(html_content)
 
 # Inizio programma principale
 
@@ -458,36 +464,29 @@ font_developed = ("Arial", 10)  # Font Arial, dimensione 16
 # Numero di righe da generare
 num_rows = 6
 
-# Definire il colore comune
+# Definisce i colori delle widget
 colore_sfondo_root = "#AAC2FB"
-
 colore_sfondo_line = "white"
-
 colore_sfondo_titolo = "#5F70E7"
 colore_testo_titolo = "white"
-
 colore_sfondo_label = "white"
 colore_testo_label = "black"
-
 colore_sfondo_button = "white"
 colore_testo_button = "black"
-
 colore_sfondo_button_on = "#FF3E3E"
 colore_testo_button_on = "white"
-
 colore_sfondo_entry = "white"
 colore_testo_entry = "black"
 
 # Crea la finestra principale
 root = tk.Tk()
 root.title("Country playlist manager")
-
 root.configure(bg=colore_sfondo_root)
 
 # Sovrascrivi il comportamento del pulsante di chiusura
 root.protocol("WM_DELETE_WINDOW", exit_app)
 
-# Crea la prima label e posizionala al centro in alto
+# Crea la prima label al centro  e in alto
 label_top = tk.Label(root, text="Country playlist manager", bg=colore_sfondo_titolo, fg=colore_testo_titolo, font=font_titolo)
 label_top.pack(side="top", pady=20, anchor="n")
 
