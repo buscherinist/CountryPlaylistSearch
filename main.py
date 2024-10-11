@@ -8,8 +8,6 @@ import webbrowser
 import subprocess
 import time
 import datetime
-import win32api
-from win32con import SM_CYSMICON
 
 values=[]
 
@@ -454,7 +452,7 @@ def center_window():
     x = (screen_width // 2) - (width // 2)
 
     # Ottieni l'altezza della barra delle applicazioni (Windows)
-    taskbar_height = win32api.GetSystemMetrics(win32con.SM_CYSMICON)
+    taskbar_height = 30
 
     y = (screen_height // 2) - (height // 2) - taskbar_height
 
