@@ -17,10 +17,38 @@
             background-repeat: repeat; /* Questo farà sì che l'immagine si ripeta */
             background-size: auto; /* Mantiene la dimensione originale dell'immagine */
         }
+		.contiene {
+            margin: 10px;
+			background-color:#ffffff;
+			width:100%;
+		}
+        .scrolling-text {
+            overflow: hidden;
+            white-space: nowrap;
+            /* Imposta la velocità di scorrimento */
+			animation-name: scroll-left;
+			animation-timing-function: linear;
+			animation-delay: 0s;
+			animation-duration: 10s;
+			animation-iteration-count: infinite;
+			font-family: Arial;
+			font-size: 40px;
+			color: red;
+			background-color:#ffffff
+        }
+
+        @keyframes scroll-left {
+            0% {
+                transform: translateX(100%);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
+        }
     </style>
 </head>
 <body>
-    <h1 id="event-name" style="text-align: center; font-size: 40px">Insert event name</h1>
+    <h1 id="event-name" style="text-align: center; font-size: 40px"><!-- Nome --></h1>
     <table style="margin-left: auto; margin-right: auto; font-size: 40px">
         <thead>
             <tr>
@@ -28,16 +56,16 @@
             </tr>
         </thead>
         <tbody id="combobox-data">
-            <tr><td>Play</td><td>FIRST ROUND</td></tr>
-<tr><td> </td><td>ALL FOR ONE</td></tr>
-<tr><td> </td><td>QUICKLY</td></tr>
-
+            <!-- I dati delle combobox saranno inseriti qui -->
         </tbody>
     </table>
-	
-	<marquee behavior="scroll" direction="left" scrollamount="5">
-        ciao a tutti
-    </marquee>
+
+<div class="contiene">	
+	<div class="scrolling-text">
+        <!-- I messaggi saranno inseriti qui -->
+		Buona serata a tutti
+    </div>
+</div>
 	
 </body>
 </html>
