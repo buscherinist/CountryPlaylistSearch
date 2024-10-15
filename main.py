@@ -197,15 +197,29 @@ def add_values(valori_da_aggiungere):
 
 #inserisce il nome della nuova choreo nel file Choreolist.dat
 def append_to_file():
+    choreos=[]
     text = nome_choreo.get().strip()  # Prendi il testo dall'Entry e rimuovi eventuali spazi iniziali e finali
     if text:  # Se il testo non è vuoto
         text=text.upper()
-        with open("./choreo/choreolist.dat", "a") as file:  # Apri il file in modalità append, crea il file se non esiste
-            file.write(text + "\n")  # Scrivi il testo con un ritorno a capo
-        nome_choreo.delete(0, tk.END)  # Pulisci il campo Entry dopo aver inserito il testo
-        update_combobox()  # Aggiorna i valori della Combobox
+
+        try:
+            with open("./choreo/choreolist.dat", "r") as file:
+                # Leggi ogni linea e rimuovi spazi bianchi come newline
+                choreos = [line.strip() for line in file.readlines()]
+        except FileNotFoundError:
+            print(f"File choreolist.dat' non trovato.")
+
+        if text not in choreos:
+            with open("./choreo/choreolist.dat", "a") as file:  # Apri il file in modalità append, crea il file se non esiste
+                file.write(text + "\n")  # Scrivi il testo con un ritorno a capo
+                nome_choreo.delete(0, tk.END)  # Pulisci il campo Entry dopo aver inserito il testo
+                update_combobox()  # Aggiorna i valori della Combobox
+        else:
+            nome_choreo.delete(0, tk.END)
+            nome_choreo.insert(0, "Choreo already present")
     else:
         # Se il testo è vuoto
+        nome_choreo.delete(0, tk.END)
         nome_choreo.insert(0, "Insert choreo")  # Inserisce il testo all'inizio
 
 # Funzione per filtrare le righe in base all'ora e restituirle in una lista
