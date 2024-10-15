@@ -141,16 +141,6 @@ def load_values_from_file():
         print(f"File choreolist.dat' non trovato.")
         return []
 
-# Funzione per aggiornare tutte le combobox
-def update_combobox():
-    global values # Dichiarazione di utilizzo della variabile globale
-    values = load_values_from_file()
-    values.sort()  # Ordina i valori in ordine alfabetico
-    #print("Valori stampati da funz aggiornamento:", values)
-    #print("modifica")
-    for combobox in combos:
-        combobox['values'] = values
-
 #rimuove la choreo se richiesto e memorizza l'ora in cui è stata suonata nel file del blocco
 def remove_values(text):
     global values # Dichiarazione di utilizzo della variabile globale
@@ -195,6 +185,17 @@ def add_values(valori_da_aggiungere):
         for combobox in combos:
             combobox['values'] = values
 
+# Funzione per aggiornare tutte le combobox
+def update_combobox(text):
+    global values # Dichiarazione di utilizzo della variabile globale
+    #values = load_values_from_file()
+    values.append(text)
+    values.sort()  # Ordina i valori in ordine alfabetico
+    #print("Valori stampati da funz aggiornamento:", values)
+    #print("modifica")
+    for combobox in combos:
+        combobox['values'] = values
+
 #inserisce il nome della nuova choreo nel file Choreolist.dat
 def append_to_file():
     choreos=[]
@@ -213,7 +214,7 @@ def append_to_file():
             with open("./choreo/choreolist.dat", "a") as file:  # Apri il file in modalità append, crea il file se non esiste
                 file.write(text + "\n")  # Scrivi il testo con un ritorno a capo
                 nome_choreo.delete(0, tk.END)  # Pulisci il campo Entry dopo aver inserito il testo
-                update_combobox()  # Aggiorna i valori della Combobox
+                update_combobox(text)  # Aggiorna i valori della Combobox
         else:
             nome_choreo.delete(0, tk.END)
             nome_choreo.insert(0, "Choreo already present")
