@@ -8,6 +8,8 @@ import webbrowser
 import subprocess
 import time
 import datetime
+from bs4 import BeautifulSoup
+from bs4 import Comment  # Import esplicito di Comment
 
 values=[]
 
@@ -268,20 +270,30 @@ def filtra_righe_per_ora():
     return righe_valide
 
 # Funzione per salvare il contenuto delle combobox in un file HTML
-def save_to_html():
-    with open("./template/template.html", "r") as template_file:
-        html_content = template_file.read()
+def save_to_html(button_id):
+    html_content = ""
+    if button_id==1:
+        with open("./template/template.html", "r") as template_file:
+            html_content = template_file.read()
+    else:
+        with open("./template/templatericarica.html", "r") as template_file:
+            html_content = template_file.read()
 
-        # Recupera il testo dall'Entry "nome_evento"
-        evento_nome = nome_evento.get().strip()  # Usa .strip() per rimuovere eventuali spazi bianchi
+    # Recupera il testo dall'Entry "nome_evento"
+    evento_nome = nome_evento.get().strip()  # Usa .strip() per rimuovere eventuali spazi bianchi
 
-        if evento_nome:  # Verifica che il nome dell'evento non sia vuoto
-            # Inserisci il nome dell'evento nell'HTML
-            html_content = html_content.replace("<!-- Nome -->", evento_nome)
-        else:
-            evento_nome="Insert event name"
-            html_content = html_content.replace("<!-- Nome -->", evento_nome)
-            nome_evento.insert(0, "Insert event name")  # Inserisce il testo all'inizio
+    if evento_nome:  # Verifica che il nome dell'evento non sia vuoto
+    # Inserisci il nome dell'evento nell'HTML
+       html_content = html_content.replace("<!-- Nome -->", evento_nome)
+    else:
+       evento_nome="Insert event name"
+       html_content = html_content.replace("<!-- Nome -->", evento_nome)
+       nome_evento.insert(0, "Insert event name")  # Inserisce il testo all'inizio
+
+    # Costruzione delle righe della tabella
+    textarea.config(state='normal')
+    textarea.delete("1.0", tk.END)  # Elimina il testo dall'inizio alla fine
+    testo = "Displayed choreos"
 
     # Costruzione delle righe della tabella
     table_rows = ""
@@ -292,6 +304,11 @@ def save_to_html():
                 table_rows += f"<tr><td>Play</td><td>{value}</td></tr>\n"
             else:
                 table_rows += f"<tr><td> </td><td>{value}</td></tr>\n"
+            testo = testo + "\n" + value
+
+    # carica nella textarea
+    textarea.insert("1.0", testo)
+    textarea.config(state='disabled')
 
     # Inserisci le righe della tabella nell'HTML
     html_content = html_content.replace(
@@ -309,69 +326,27 @@ def save_to_html():
     # Scorri fino alla sezione All'avvio.
     # Seleziona l'opzione Apri la pagina Nuova scheda o Apri una pagina specifica o un insieme di pagine
     # invece di Riprendi da dove eri rimasto.
-
+    if (button_id == 1):
     # Carico la pagina html in Chrome
     # Percorso relativo al file
-    relative_path = './playlist.html'
+        relative_path = './playlist.html'
     # Ottenere il percorso assoluto
-    abs_path = os.path.abspath(relative_path)
+        abs_path = os.path.abspath(relative_path)
     #print("Il percorso assoluto del file è:", abs_path)
 
     #Chiudi tutte le istanze di Chrome senza mostrare l'elenco dei PID
-    subprocess.call(["taskkill", "/F", "/IM", "chrome.exe"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.call(["taskkill", "/F", "/IM", "chrome.exe"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     # Aspetta qualche secondo per assicurarti che tutte le istanze siano chiuse
-    time.sleep(1)
+        time.sleep(1)
 
     # Apri una nuova scheda con un file HTML specifico in modalità incognito
-    chrome_path = 'C:/Program Files/Google/Chrome/Application/chrome.exe'
+        chrome_path = 'C:/Program Files/Google/Chrome/Application/chrome.exe'
 
     # Avvia Chrome in modalità incognito
-    subprocess.Popen([chrome_path, '--incognito', f'file:///{abs_path}'])
+        subprocess.Popen([chrome_path, '--incognito', f'file:///{abs_path}'])
 
-def save_to_html_for_load():
-    with open("./template/templatericarica.html", "r") as template_file:
-        html_content = template_file.read()
-
-        # Recupera il testo dall'Entry "nome_evento"
-        evento_nome = nome_evento.get().strip()  # Usa .strip() per rimuovere eventuali spazi bianchi
-
-        if evento_nome:  # Verifica che il nome dell'evento non sia vuoto
-            # Inserisci il nome dell'evento nell'HTML
-            html_content = html_content.replace("<!-- Nome -->", evento_nome)
-        else:
-            evento_nome="Insert event name"
-            html_content = html_content.replace("<!-- Nome -->", evento_nome)
-            nome_evento.insert(0, "Insert event name")  # Inserisce il testo all'inizio
-
-    # Costruzione delle righe della tabella
-    table_rows = ""
-    textarea.config(state='normal')
-    textarea.delete("1.0", tk.END)  # Elimina il testo dall'inizio alla fine
-    testo="Displayed choreos"
-    for i, combobox in enumerate(combos):
-        value = combobox.get()
-        if value and value != "":  # Solo se la combobox non è vuota
-            if i==0:
-                table_rows += f"<tr><td>Play</td><td>{value}</td></tr>\n"
-            else:
-                table_rows += f"<tr><td> </td><td>{value}</td></tr>\n"
-            testo=testo+"\n"+value
-    #carica nella textarea
-    textarea.insert("1.0", testo)
-    textarea.config(state='disabled')
-
-    # Inserisci le righe della tabella nell'HTML
-    html_content = html_content.replace(
-        '<!-- I dati delle combobox saranno inseriti qui -->', table_rows)
-
-    # Salva il file HTML aggiornato
-    with open("playlist.html", "w") as html_file:
-        html_file.write(html_content)
-    #inserisce il messaggio nella playlist html
-    insert_msg()
-
-#svuot il file dello storico delle choreo ballate
+#svuota il file dello storico delle choreo ballate
 def clear_file(text):
     # Svuotare il contenuto di un file
     #print("Cancellazione del file "+text)
@@ -436,6 +411,28 @@ def insert_msg():
     # Salva il file HTML aggiornato
         with open("playlist.html", "w") as html_file:
             html_file.write(html_content)
+
+#svuota il messaggio nella pagina playlist
+def reset_msg():
+    with open("playlist.html", 'r', encoding='utf-8') as file:
+        html_content = file.read()
+    # Parse il contenuto HTML
+    soup = BeautifulSoup(html_content, 'html.parser')
+
+    # Trova il div con la classe "scrolling-text"
+    scrolling_text_div = soup.find('div', class_='scrolling-text')
+
+    if scrolling_text_div:
+        # Sostituisci il testo con il commento desiderato
+        # Rimuove tutto il contenuto interno del div
+        scrolling_text_div.clear()
+        scrolling_text_div.append(Comment(" I messaggi saranno inseriti qui "))
+
+    # Opzionalmente: riscrivi il file con il nuovo contenuto
+    with open("playlist.html", 'w', encoding='utf-8') as file:
+        file.write(str(soup))
+    #svuoto il campo messaggio
+    msg.delete(0, tk.END)
 
 #vecchia funzione centra finestra quando le dimensioni erano fisse
 #def center_window(root, width, height):
@@ -549,14 +546,14 @@ textarea.insert("1.0","Displayed choreos")
 # Imposta la textarea in modalità non modificabile
 textarea.config(state='disabled')
 
-button_show = tk.Button(frame_left, text="Show", bg=colore_sfondo_button, fg=colore_testo_button, font=font, command=save_to_html)
+button_show = tk.Button(frame_left, text="Show", bg=colore_sfondo_button, fg=colore_testo_button, font=font, command=lambda: save_to_html(1))
 button_show.grid(row=num_rows-1, column=2, pady=2)
 
 # Bind degli eventi per il cambiamento di colore
 button_show.bind("<Enter>", on_enter)  # Quando il mouse entra nel pulsante
 button_show.bind("<Leave>", on_leave)  # Quando il mouse esce dal pulsante
 
-button_load = tk.Button(frame_left, text="Load", bg=colore_sfondo_button, fg=colore_testo_button, font=font, command=save_to_html_for_load)
+button_load = tk.Button(frame_left, text="Load", bg=colore_sfondo_button, fg=colore_testo_button, font=font, command=lambda: save_to_html(2))
 button_load.grid(row=num_rows-1, column=3, padx=10, pady=2)
 
 # Bind degli eventi per il cambiamento di colore
@@ -627,6 +624,13 @@ msg_insert.grid(row=num_rows+6, column=2, pady=2)
 # Bind degli eventi per il cambiamento di colore
 msg_insert.bind("<Enter>", on_enter)  # Quando il mouse entra nel pulsante
 msg_insert.bind("<Leave>", on_leave)  # Quando il mouse esce dal pulsante
+
+msg_reset = tk.Button(frame_left, text="Reset",  bg=colore_sfondo_button, fg=colore_testo_button, font=font, command=reset_msg)
+msg_reset.grid(row=num_rows+6, column=3, pady=2)
+
+# Bind degli eventi per il cambiamento di colore
+msg_reset.bind("<Enter>", on_enter)  # Quando il mouse entra nel pulsante
+msg_reset.bind("<Leave>", on_leave)  # Quando il mouse esce dal pulsante
 
 #pulsante di chiusura
 button_exit = tk.Button(frame_left, text="Exit",  bg=colore_sfondo_button, fg=colore_testo_button, font=font, command=exit_app)
