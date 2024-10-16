@@ -540,7 +540,7 @@ combos = create_dynamic_rows(frame_left, num_rows)
 
 # Creazione della Textarea
 textarea = tk.Text(frame_left, height=7, width=25, font=font)  # height è il numero di righe, width il numero di colonne
-textarea.grid(row=0, column=4, rowspan=3, padx=5)
+textarea.grid(row=0, column=4, rowspan=4, padx=5)
 # Inserisci del testo predefinito nella Textarea
 textarea.insert("1.0","Displayed choreos")
 # Imposta la textarea in modalità non modificabile
