@@ -18,7 +18,6 @@ def filter_combobox(event):
     global values # Dichiarazione di utilizzo della variabile globale
     # Ottieni il testo corrente inserito nella Combobox
     typed_text = event.widget.get()
-    # print("Valori stampati dal filtro:", values)  # Stampa i valori caricati
 
     # Filtra i valori che iniziano con il testo digitato
     filtered_values = [value for value in values if value.lower().startswith(typed_text.lower())]
@@ -26,8 +25,8 @@ def filter_combobox(event):
     # Aggiorna i valori della Combobox con i valori filtrati
     event.widget['values'] = filtered_values
 
-    # Mostra la lista aggiornata dei valori
-    # Non la mostra più, altrimenti perdevo il focus; la lista viene mostrata quando si clicca sulla freccia
+    # Non la mostra più la lista aggiornata dei valori,
+    # altrimenti perdevo il focus; la lista viene mostrata quando si clicca sulla freccia
     #event.widget.event_generate('<Down>')
 
 # Funzione per spostare i valori delle combobox verso l'alto
@@ -38,7 +37,6 @@ def move_up():
     if varCheck.get() == 1:  # Se la checkbox è selezionata
         if not blocco.get().isdigit():  # Controlla che ci sia un numero nell'Entry
             messagebox.showwarning("Error", "You must enter a number in REPEAT AFTER HOURS!")
-            #blocco.config(bg="yellow")  # Colora l'Entry in rosso
             return
 
     # Prendi il contenuto della prima combobox
@@ -60,14 +58,14 @@ def move_up():
         now = datetime.datetime.now()
 
         # Formattare la data e l'ora come stringa
-        timestamp = now.strftime("%Y-%m-%d %H:%M:%S")  # Esempio: '2024-09-05 15:30:45'
+        # Esempio: '2024-09-05 15:30:45'
+        timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
 
         with open("playliststore.dat", "a") as file:
             file.write(first_value + "\n" + timestamp + "\n")
 
     #se richiesta la gestione del blocco per un certo numero di ore
         if varCheck.get() == 1:
-            righe_da_tenere= []
             #elimino la choreo dalla lista dei valori
             remove_values(first_value)
             #aggiungo la choreo per cui è passato il tempo di blocco
@@ -148,14 +146,14 @@ def remove_values(text):
     global values # Dichiarazione di utilizzo della variabile globale
     if text in values:
         values.remove(text)
-    #print("Valori stampati da funz remove:", values)
     for combobox in combos:
         combobox['values'] = values
     # Ottenere la data e l'ora attuali
     now = datetime.datetime.now()
 
     # Formattare la data e l'ora come stringa
-    timestamp = now.strftime("%Y-%m-%d %H:%M:%S")  # Esempio: '2024-09-05 15:30:45'
+    # Esempio: '2024-09-05 15:30:45'
+    timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
 
     with open("playlistblock.dat", "a") as file:
         file.write(text + "\n" + timestamp + "\n")
@@ -163,10 +161,6 @@ def remove_values(text):
 
 def add_values(valori_da_aggiungere):
     global values
-
-    #print("valori da aggiungere")
-    #print(valori_da_aggiungere)
-
     for combobox in combos:
         # Ottieni i valori attuali della combobox come una lista
         valori_attuali = list(combobox['values'])
@@ -176,9 +170,6 @@ def add_values(valori_da_aggiungere):
 
         # Se necessario, converti tuple in stringhe
         values = [str(valore) if isinstance(valore, tuple) else valore for valore in nuovi_valori]
-
-        #print("nuovi valori")
-        #print(values)
 
         # Ordina i valori come stringhe per evitare errori
         values = sorted(values, key=lambda x: str(x))
@@ -190,11 +181,8 @@ def add_values(valori_da_aggiungere):
 # Funzione per aggiornare tutte le combobox
 def update_combobox(text):
     global values # Dichiarazione di utilizzo della variabile globale
-    #values = load_values_from_file()
     values.append(text)
-    values.sort()  # Ordina i valori in ordine alfabetico
-    #print("Valori stampati da funz aggiornamento:", values)
-    #print("modifica")
+    values.sort()
     for combobox in combos:
         combobox['values'] = values
 
@@ -239,32 +227,21 @@ def filtra_righe_per_ora():
     # Ottieni il tempo attuale e somma le ore fornite
     ora_corrente = datetime.datetime.now()
 
-    #stampa orari
-    #print("Ore da aggiungere "+ str(ore_da_aggiungere))
-    #print(f"Ora corrente {ora_corrente.strftime('%H:%M:%S')}")
-    #print("righe del file")
-    #print(righe)
-    #print("inizio controllo")
     for i in range(1, len(righe), 2):  # Legge solo le righe con i timestamp
         # Converte la stringa del timestamp in un oggetto datetime
         ora_riga = datetime.datetime.strptime(righe[i].strip(), "%Y-%m-%d %H:%M:%S")
-        #print("Choreo" + righe[i - 1])
-        #print(f"Ora della riga {ora_riga.strftime('%H:%M:%S')}")
+
         # Se la riga soddisfa la condizione, la aggiunge alla lista da ricaricare nella combo
         ora_da_controllare = ora_riga + datetime.timedelta(hours=ore_da_aggiungere)
-        #print(f"Ora da controllare {ora_da_controllare.strftime('%H:%M:%S')}")
         if  ora_corrente > ora_da_controllare:
-            #print("Choreo da ricaricare nella combobox" + righe[i - 1])
             righe_valide.append((righe[i - 1].strip()))
         else:
             # Se la riga non soddisfa la condizione, la aggiunge alla lista da ricaricare nel file
-            #print("Choreo da ricaricare nel file" + righe[i - 1])
             righe_da_tenere.append(righe[i-1]) #mantiene il contenuto
             righe_da_tenere.append(righe[i])  # mantiene il timestamp
 
     #sovrascrivi il file con le righe che vuoi mantenere
     with open("playlistblock.dat", 'w') as file:
-        #print(f"Righe da riscrivere nel file: {righe_da_tenere}")
         file.writelines(righe_da_tenere)
 
     return righe_valide
