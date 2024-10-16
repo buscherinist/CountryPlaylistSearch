@@ -654,3 +654,4 @@ center_window()
 
 # Avvia il loop principale della finestra
 root.mainloop()
+
