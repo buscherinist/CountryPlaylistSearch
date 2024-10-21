@@ -301,7 +301,8 @@ def save_to_html(button_id):
     #ATTENZIONE
     #Vai nelle Impostazioni di Chrome.
     # Scorri fino alla sezione All'avvio.
-    # Seleziona l'opzione Apri la pagina Nuova scheda o Apri una pagina specifica o un insieme di pagine
+    # Seleziona l'opzione Apri la pagina Nuova scheda
+    # o Apri una pagina specifica o un insieme di pagine
     # invece di Riprendi da dove eri rimasto.
     if (button_id == 1):
     # Carico la pagina html in Chrome
@@ -321,7 +322,9 @@ def save_to_html(button_id):
         chrome_path = 'C:/Program Files/Google/Chrome/Application/chrome.exe'
 
     # Avvia Chrome in modalità incognito
-        subprocess.Popen([chrome_path, '--incognito', f'file:///{abs_path}'])
+        #subprocess.Popen([chrome_path, '--incognito', f'file:///{abs_path}'])
+    # Apri Chrome a tutto schermo
+    subprocess.Popen([chrome_path, '--start-fullscreen',f'file:///{abs_path}'])
 
 #svuota il file dello storico delle choreo ballate
 def clear_file(text):
