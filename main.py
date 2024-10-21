@@ -326,6 +326,23 @@ def save_to_html(button_id):
     # Apri Chrome a tutto schermo
     subprocess.Popen([chrome_path, '--start-fullscreen',f'file:///{abs_path}'])
 
+
+    #nuova parte
+    # Aspetta che la finestra venga creata
+    time.sleep(2)
+
+    # Ottieni tutte le finestre aperte
+    windows = gw.getWindowsWithTitle('Chrome')
+
+    if windows:
+        chrome_window = windows[0]  # Supponiamo che la prima finestra sia quella giusta
+
+        # Sposta la finestra sul secondo monitor
+        # Supponendo che il secondo monitor sia alla destra del monitor principale,
+        # lo spostiamo specificando delle coordinate appropriate.
+        chrome_window.moveTo(1920, 0)  # Coordina (1920, 0) per spostare la finestra sul monitor esteso
+    #finita nuova parte
+
 #svuota il file dello storico delle choreo ballate
 def clear_file(text):
     # Svuotare il contenuto di un file
