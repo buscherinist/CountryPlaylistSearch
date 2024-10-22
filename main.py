@@ -308,6 +308,7 @@ def save_to_html(button_id):
     # o Apri una pagina specifica o un insieme di pagine
     # invece di Riprendi da dove eri rimasto.
     if (button_id == 1):
+        print(button_id)
     # Carico la pagina html in Chrome
     # Percorso relativo al file
         relative_path = './playlist.html'
@@ -327,24 +328,24 @@ def save_to_html(button_id):
     # Avvia Chrome in modalità incognito
         #subprocess.Popen([chrome_path, '--incognito', f'file:///{abs_path}'])
     # Apri Chrome a tutto schermo
-    subprocess.Popen([chrome_path, '--start-fullscreen',f'file:///{abs_path}'])
+        subprocess.Popen([chrome_path, '--start-fullscreen',f'file:///{abs_path}'])
 
     #nuova parte
     # Aspetta che la finestra venga creata
-    time.sleep(0.7)
+        time.sleep(0.7)
 
     # Ottieni tutte le finestre aperte
-    windows = gw.getWindowsWithTitle('Chrome')
+        windows = gw.getWindowsWithTitle('Chrome')
 
-    if windows:
-        chrome_window = windows[0]  # Supponiamo che la prima finestra sia quella giusta
+        if windows:
+            chrome_window = windows[0]  # Supponiamo che la prima finestra sia quella giusta
         #ottengo la lunghezza dello schermo
-        screen_width = root.winfo_screenwidth()
+            screen_width = root.winfo_screenwidth()
         # Sposta la finestra sul secondo monitor
         # Supponendo che il secondo monitor sia alla destra del monitor principale,
         # lo spostiamo specificando delle coordinate appropriate.
         #chrome_window.moveTo(1920, 0)  # Coordina (1920, 0) per spostare la finestra sul monitor esteso
-        chrome_window.moveTo(screen_width, 0)
+            chrome_window.moveTo(screen_width, 0)
     #finita nuova parte
 
 # Funzione per caricare solo i nomi dal file
