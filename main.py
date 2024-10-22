@@ -10,6 +10,7 @@ import time
 import datetime
 from bs4 import BeautifulSoup
 from bs4 import Comment  # Import esplicito di Comment
+import pygetwindow as gw
 
 values=[]
 
@@ -329,18 +330,20 @@ def save_to_html(button_id):
 
     #nuova parte
     # Aspetta che la finestra venga creata
-    time.sleep(2)
+    time.sleep(0.7)
 
     # Ottieni tutte le finestre aperte
     windows = gw.getWindowsWithTitle('Chrome')
 
     if windows:
         chrome_window = windows[0]  # Supponiamo che la prima finestra sia quella giusta
-
+        #ottengo la lunghezza dello schermo
+        screen_width = root.winfo_screenwidth()
         # Sposta la finestra sul secondo monitor
         # Supponendo che il secondo monitor sia alla destra del monitor principale,
         # lo spostiamo specificando delle coordinate appropriate.
-        chrome_window.moveTo(1920, 0)  # Coordina (1920, 0) per spostare la finestra sul monitor esteso
+        #chrome_window.moveTo(1920, 0)  # Coordina (1920, 0) per spostare la finestra sul monitor esteso
+        chrome_window.moveTo(screen_width, 0)
     #finita nuova parte
 
 #svuota il file dello storico delle choreo ballate
