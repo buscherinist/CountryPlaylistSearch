@@ -3,6 +3,7 @@
 import tkinter as tk
 from tkinter import ttk  # Importa ttk per utilizzare Combobox
 from tkinter import messagebox  # Importa messagebox per la finestra di conferma
+from tkinter import Listbox, Scrollbar
 import os
 import webbrowser
 import subprocess
@@ -52,6 +53,7 @@ def move_up():
 
     # Pulisci l'ultima combobox
     #combos[-1].set('Choose a choreo')
+    combos[-1].set('')
 
     # Scrivi il valore della prima combobox nel file storico
     if first_value:
@@ -327,7 +329,6 @@ def save_to_html(button_id):
     # Apri Chrome a tutto schermo
     subprocess.Popen([chrome_path, '--start-fullscreen',f'file:///{abs_path}'])
 
-
     #nuova parte
     # Aspetta che la finestra venga creata
     time.sleep(0.7)
@@ -345,6 +346,40 @@ def save_to_html(button_id):
         #chrome_window.moveTo(1920, 0)  # Coordina (1920, 0) per spostare la finestra sul monitor esteso
         chrome_window.moveTo(screen_width, 0)
     #finita nuova parte
+
+# Funzione per caricare solo i nomi dal file
+def load_choreographies():
+    choreographies = []
+    with open('playliststore.dat', 'r') as file:
+        lines = file.readlines()
+        for line in lines:
+            # Splitta la riga al primo spazio e prendi il primo elemento (il nome)
+            choreographies = [lines[i].strip() for i in range(0, len(lines), 2)]
+            choreographies.sort()
+    return choreographies
+
+#mostra l'elenco delle coreo già inserite
+def list_choreo():
+    choreographies = load_choreographies()
+
+    # Crea una nuova finestra
+    choreo_window = tk.Toplevel(frame_left)
+    choreo_window.title("Choreos")
+
+    # Crea una scrollbar verticale
+    scrollbar = Scrollbar(choreo_window)
+    scrollbar.grid(row=0, column=1, sticky='ns')
+
+    # Crea una Listbox per mostrare le coreografie
+    listbox = Listbox(choreo_window, yscrollcommand=scrollbar.set)
+    listbox.grid(row=0, column=0, padx=10, pady=10)
+
+    # Configura la scrollbar per scorrere la listbox
+    scrollbar.config(command=listbox.yview)
+
+    # Aggiunge le coreografie (solo i nomi) alla Listbox
+    for choreo in choreographies:
+        listbox.insert(tk.END, choreo)
 
 #svuota il file dello storico delle choreo ballate
 def clear_file(text):
@@ -559,6 +594,13 @@ button_load.grid(row=num_rows-1, column=3, padx=10, pady=2)
 # Bind degli eventi per il cambiamento di colore
 button_load.bind("<Enter>", on_enter)  # Quando il mouse entra nel pulsante
 button_load.bind("<Leave>", on_leave)  # Quando il mouse esce dal pulsante
+
+button_list = tk.Button(frame_left, text="Show Choreographies", bg=colore_sfondo_button, fg=colore_testo_button, font=font, command= list_choreo)
+button_list.grid(row=num_rows-1, column=4, padx=10, pady=2)
+
+# Bind degli eventi per il cambiamento di colore
+button_list.bind("<Enter>", on_enter)  # Quando il mouse entra nel pulsante
+button_list.bind("<Leave>", on_leave)  # Quando il mouse esce dal pulsante
 
 # Aggiungi una linea orizzontale sottile dopo il pulsante
 add_horizontal_line(frame_left, num_rows)  # Posiziona la linea dopo il pulsante
