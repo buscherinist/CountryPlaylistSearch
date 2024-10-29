@@ -308,7 +308,6 @@ def save_to_html(button_id):
     # o Apri una pagina specifica o un insieme di pagine
     # invece di Riprendi da dove eri rimasto.
     if (button_id == 1):
-        print(button_id)
     # Carico la pagina html in Chrome
     # Percorso relativo al file
         relative_path = './playlist.html'
@@ -328,7 +327,7 @@ def save_to_html(button_id):
     # Avvia Chrome in modalità incognito
         #subprocess.Popen([chrome_path, '--incognito', f'file:///{abs_path}'])
     # Apri Chrome a tutto schermo
-        subprocess.Popen([chrome_path, '--start-fullscreen',f'file:///{abs_path}'])
+        subprocess.Popen([chrome_path, '--incognito', '--start-fullscreen',f'file:///{abs_path}'])
 
     #nuova parte
     # Aspetta che la finestra venga creata
