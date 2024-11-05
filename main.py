@@ -12,6 +12,7 @@ import datetime
 from bs4 import BeautifulSoup
 from bs4 import Comment  # Import esplicito di Comment
 import pygetwindow as gw
+import pyautogui
 
 values=[]
 
