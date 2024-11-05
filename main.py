@@ -31,6 +31,10 @@ def filter_combobox(event):
     # altrimenti perdevo il focus; la lista viene mostrata quando si clicca sulla freccia
     #event.widget.event_generate('<Down>')
 
+def on_click(event): # Controlla se c'è del testo nella combobox e applica il filtro
+    if event.widget.get():
+        filter_combobox(event)
+
 # Funzione per spostare i valori delle combobox verso l'alto
 def move_up():
     if not combos:
@@ -125,6 +129,7 @@ def create_dynamic_rows(frame, num_rows):
 
         # Aggiungi il binding per filtrare i valori mentre si digita
         combobox.bind('<KeyRelease>', filter_combobox)
+        combobox.bind('<Button-1>', on_click)
 
         # Aggiungi la combobox alla lista
         combos.append(combobox)
