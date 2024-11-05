@@ -314,7 +314,6 @@ def save_to_html(button_id):
     # invece di Riprendi da dove eri rimasto.
     if (button_id == 1):
     # Carico la pagina html in Chrome
-    # Percorso relativo al file
         relative_path = './playlist.html'
     # Ottenere il percorso assoluto
         abs_path = os.path.abspath(relative_path)
@@ -328,29 +327,51 @@ def save_to_html(button_id):
 
     # Apri una nuova scheda con un file HTML specifico in modalità incognito
         chrome_path = 'C:/Program Files/Google/Chrome/Application/chrome.exe'
+    # Avvia un'istanza di tkinter per ottenere la larghezza dello schermo
+        root = tk.Tk()
+        screen_width = root.winfo_screenwidth()
+        screen_height = root.winfo_screenheight()
+        root.destroy()
 
-    # Avvia Chrome in modalità incognito
-        #subprocess.Popen([chrome_path, '--incognito', f'file:///{abs_path}'])
-    # Apri Chrome a tutto schermo
-        subprocess.Popen([chrome_path, '--incognito', '--start-fullscreen',f'file:///{abs_path}'])
+    # Verifica se esiste un secondo monitor
+        screens = pyautogui.screenInfo()
+        if len(screens) > 1:
+            # Coordina per il secondo monitor
+            second_monitor_x = screen_width
+        else:
+        # Usa lo schermo principale se non c'è un secondo monitor
+            second_monitor_x = 0
 
-    #nuova parte
-    # Aspetta che la finestra venga creata
+    # Avvia Chrome in modalità incognito e a tutto schermo (con F11) nel secondo schermo
+        subprocess.Popen([
+            chrome_path,
+            '--incognito',
+            f'file:///{abs_path}',
+            f'--window-position={second_monitor_x},0',  # Posizione della finestra sul secondo schermo
+            '--start-fullscreen'  # Richiede che Chrome parta già in modalità schermo intero
+        ])
+
+    # Dopo aver aperto Chrome, aspetta e simula F11 per assicurarsi del fullscreen
         time.sleep(0.7)
+        pyautogui.press('f11')
 
+    # vecchia parte
+    # Apri Chrome a tutto schermo in modalità incognito
+        #subprocess.Popen([chrome_path, '--incognito', '--start-fullscreen',f'file:///{abs_path}'])
+    # Aspetta che la finestra venga creata
+        #time.sleep(0.7)
     # Ottieni tutte le finestre aperte
-        windows = gw.getWindowsWithTitle('Chrome')
+        #windows = gw.getWindowsWithTitle('Chrome')
 
-        if windows:
-            chrome_window = windows[0]  # Supponiamo che la prima finestra sia quella giusta
+        #if windows:
+            #chrome_window = windows[0]  # Supponiamo che la prima finestra sia quella giusta
         #ottengo la lunghezza dello schermo
-            screen_width = root.winfo_screenwidth()
+            #screen_width = root.winfo_screenwidth()
         # Sposta la finestra sul secondo monitor
         # Supponendo che il secondo monitor sia alla destra del monitor principale,
         # lo spostiamo specificando delle coordinate appropriate.
-        #chrome_window.moveTo(1920, 0)  # Coordina (1920, 0) per spostare la finestra sul monitor esteso
-            chrome_window.moveTo(screen_width, 0)
-    #finita nuova parte
+            #chrome_window.moveTo(screen_width, 0)
+    #finita vecchia parte
 
 # Funzione per caricare solo i nomi dal file
 def load_choreographies():
